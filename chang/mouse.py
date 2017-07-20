@@ -74,9 +74,11 @@ def get_feature(df):
     
     speeds = pd.Series([ np.log1p(distance) - np.log1p(delta)  for (distance, delta) in zip(distance_deltas, time_deltas) ])
     angles = pd.Series([  np.log1p((points[i+1][0][1] - points[i][0][1])) - np.log1p((points[i+1][0][0] - points[i][0][0])) for i in range(len(points)-1)])
+    accelerates = pd.Series([ np.log1p(distance) - np.log1p(delta) - np.log1p(delta)  for (distance, delta) in zip(distance_deltas, time_deltas) ])
     
     speed_diff = speeds.diff(1).dropna()
     angle_diff = angles.diff(1).dropna() 
+    accelerate_diff = accelerates.diff(1).dropna()
     
     distance_aim_deltas = pd.Series([ sp.spatial.distance.euclidean(points[i][0], aim)  for i in range(len(points))])
     distance_aim_deltas_diff = distance_aim_deltas.diff(1).dropna()
@@ -85,7 +87,25 @@ def get_feature(df):
     df['speed_diff_mean'] = speed_diff.mean()
     df['speed_diff_var'] =  speed_diff.var()
     df['speed_diff_max'] = speed_diff.max()
+    df['speed_diff_mad'] = speed_diff.mad()
+    df['speed_diff_kurt'] = speed_diff.kurt()
+    df['speed_diff_skew'] = speed_diff.skew()
+
+    df['angle_diff_median'] = angle_diff.median()
+    df['angle_diff_mean'] = angle_diff.mean()
+    df['angle_diff_max'] = angle_diff.max()
     df['angle_diff_var'] =  angle_diff.var()
+    df['angle_diff_mad'] = angle_diff.mad()
+    df['angle_diff_kurt'] = angle_diff.kurt()
+    df['angle_diff_skew'] = angle_diff.skew()
+
+    df['accelerate_diff_median'] = accelerate_diff.median()
+    df['accelerate_diff_mean'] = accelerate_diff.mean()
+    df['accelerate_diff_var'] =  accelerate_diff.var()
+    df['accelerate_diff_max'] = accelerate_diff.max()
+    df['accelerate_diff_mad'] = accelerate_diff.mad()
+    df['accelerate_diff_kurt'] = accelerate_diff.kurt()
+    df['accelerate_diff_skew'] = accelerate_diff.skew()
     
     df['time_delta_min'] =  time_deltas.min()
     df['time_delta_max'] = time_deltas.max()
@@ -96,14 +116,30 @@ def get_feature(df):
     df['aim_distance_last'] = distance_aim_deltas.values[-1]
     df['aim_distance_diff_max'] = distance_aim_deltas_diff.max()
     df['aim_distance_diff_var'] = distance_aim_deltas_diff.var()
+    df['aim_distance_diff_mean'] = distance_aim_deltas_diff.mean()
+    df['aim_distance_diff_mad'] = distance_aim_deltas_diff.mad()
+    df['aim_distance_diff_kurt'] = distance_aim_deltas_diff.kurt()
+    df['aim_distance_diff_skew'] = distance_aim_deltas_diff.skew()
     
     df['mean_speed'] = speeds.mean()
     df['median_speed'] = speeds.median()
     df['var_speed'] = speeds.var()
+    df['mad_speed'] = speeds.mad()
+    df['kurt_speed'] = speeds.kurt()
+    df['skew_speed'] = speeds.skew()
     
+    df['mean_angle'] = angles.mean()
     df['max_angle'] = angles.max()
     df['var_angle'] = angles.var()
     df['kurt_angle'] = angles.kurt()
+    df['skew_angle'] = angles.skew()
+
+    df['mean_accelerate'] = accelerates.mean()
+    df['median_accelerate'] = accelerates.median()
+    df['var_accelerate'] = accelerates.var()
+    df['mad_accelerate'] = accelerates.mad()
+    df['kurt_accelerate'] = accelerates.kurt()
+    df['skew_accelerate'] = accelerates.skew()
     
     df['y_min'] = ys.min()
     df['y_max'] = ys.max()
@@ -211,4 +247,4 @@ if __name__ == '__main__':
     res['prob'] = y
     res['id'] = res['id'].astype(int)
     res = res.sort_values(by='prob')  
-    res.iloc[0:20000].id.to_csv(os.path.join(sub, 'BDC20160706.txt'), header=None, index=False)
+    res.iloc[0:20000].id.to_csv(os.path.join(sub, 'BDC20160720.txt'), header=None, index=False)
